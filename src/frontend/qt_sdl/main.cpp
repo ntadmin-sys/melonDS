@@ -25,6 +25,10 @@
 #include <string>
 
 #include <QApplication>
+#include <QTranslator>
+#include <QLocale>
+#include <QLibraryInfo>
+#include <QDir>
 #include <QStyle>
 #include <QMessageBox>
 #include <QMenuBar>
@@ -280,7 +284,20 @@ int main(int argc, char** argv)
     // Allow using the system dark theme palette on Windows
     qputenv("QT_QPA_PLATFORM", "windows:darkmode=2");
 #endif
+    
+    QTranslator qtTranslator;
+    QTranslator appTranslator;
+    QString lang = QLocale::system().name();
 
+    QString qtTrPath = QLibraryInfo::path(QLibraryInfo::TranslationsPath);
+    if (qtTranslator.load("qt_" + lang, qtTrPath))
+        QApplication::installTranslator(&qtTranslator);
+
+    QString appPath = QCoreApplication::applicationDirPath();
+    QString appTrPath = appPath + "/translations";
+    if (appTranslator.load("melonDS_" + lang, appTrPath))
+        QApplication::installTranslator(&appTranslator);
+    
     printf("melonDS " MELONDS_VERSION "\n");
     printf(MELONDS_URL "\n");
 
